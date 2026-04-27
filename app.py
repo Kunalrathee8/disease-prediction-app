@@ -323,7 +323,8 @@ DISEASE_CONFIG = {
 
 # ── Session state ─────────────────────────────────────────────────────────────
 def init_state(disease):
-    if st.session_state.get("disease") != disease:
+    # Re-init if disease changed OR if history is missing
+    if st.session_state.get("disease") != disease or "history" not in st.session_state:
         st.session_state.disease = disease
         st.session_state.step    = 0
         st.session_state.answers = {}
