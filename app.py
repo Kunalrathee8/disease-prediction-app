@@ -476,26 +476,31 @@ questions = cfg["questions"]
 total     = len(questions)
 
 # ── CHAT HEADER ───────────────────────────────────────────────────────────────
-st.markdown(f"""
-<div class="chat-header">
-    <div class="avatar">{cfg['emoji']}</div>
-    <div>
-        <div class="hname">MediBot — {selected} Screening</div>
-        <div class="hstatus">Online &nbsp;·&nbsp; {total} questions</div>
-    </div>
-    <div style="margin-left:auto">
-        <button onclick="
-            var btn = window.parent.document.querySelector('[data-testid=stSidebarCollapsedControl]') ||
-                      window.parent.document.querySelector('[data-testid=stSidebarNavCollapseButton]') ||
-                      window.parent.document.querySelector('section[data-testid=stSidebar] ~ div button');
-            if(btn){{ btn.click(); }}
-        " style="background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.35);
-                  border-radius:99px;padding:5px 14px;font-size:0.73rem;color:#06b6d4;
-                  font-weight:600;cursor:pointer;font-family:Sora,sans-serif;letter-spacing:0.3px;">
-            ☰ Switch Disease
-        </button>
-    </div>
-</div>""", unsafe_allow_html=True)
+col_header, col_switcher = st.columns([3, 1])
+
+with col_header:
+    st.markdown(f"""
+    <div class="chat-header">
+        <div class="avatar">{cfg['emoji']}</div>
+        <div>
+            <div class="hname">MediBot — {selected} Screening</div>
+            <div class="hstatus">Online &nbsp;·&nbsp; {total} questions</div>
+        </div>
+    </div>""", unsafe_allow_html=True)
+
+with col_switcher:
+    st.markdown("<div style='padding-top:0.6rem'></div>", unsafe_allow_html=True)
+    disease_options = list(DISEASE_CONFIG.keys())
+    new_disease = st.selectbox(
+        "Switch Disease",
+        options=disease_options,
+        index=disease_options.index(selected),
+        key="disease_switcher",
+        label_visibility="collapsed",
+    )
+    if new_disease != selected:
+        init_state(new_disease)
+        st.rerun()
 
 # ── MESSAGES (render directly, no wrapper div with fixed height) ──────────────
 for msg in st.session_state.history:
