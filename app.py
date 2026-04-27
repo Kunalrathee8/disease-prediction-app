@@ -438,6 +438,11 @@ def render_error(text):
         </div>
     </div>""", unsafe_allow_html=True)
 
+# ── Disease selection (single source of truth) ────────────────────────────────
+disease_options = ["Diabetes", "Heart Disease", "Parkinsons"]
+if "disease" not in st.session_state:
+    st.session_state.disease = "Diabetes"
+
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
@@ -446,11 +451,11 @@ with st.sidebar:
         <div class="tagline">AI-powered disease screening</div>
     </div>""", unsafe_allow_html=True)
 
-    selected = option_menu(
+    sidebar_choice = option_menu(
         menu_title=None,
-        options=["Diabetes", "Heart Disease", "Parkinsons"],
+        options=disease_options,
         icons=["droplet-half", "heart-pulse", "person-lines-fill"],
-        default_index=0,
+        default_index=disease_options.index(st.session_state.disease),
         styles={
             "container":         {"padding": "0.5rem 0.8rem", "background": "transparent"},
             "icon":              {"font-size": "0.9rem"},
@@ -459,6 +464,10 @@ with st.sidebar:
             "nav-link-selected": {"font-weight": "600", "color": "#e2e8f0"},
         },
     )
+    if sidebar_choice != st.session_state.disease:
+        init_state(sidebar_choice)
+        st.rerun()
+
     st.markdown("---")
     if st.button("🔄  Restart Chat"):
         reset_chat()
@@ -470,6 +479,7 @@ with st.sidebar:
     </div>""", unsafe_allow_html=True)
 
 # ── Init ──────────────────────────────────────────────────────────────────────
+selected = st.session_state.disease
 init_state(selected)
 cfg       = DISEASE_CONFIG[selected]
 questions = cfg["questions"]
@@ -490,13 +500,11 @@ with col_header:
 
 with col_switcher:
     st.markdown("<div style='padding-top:0.6rem'></div>", unsafe_allow_html=True)
-    disease_options = list(DISEASE_CONFIG.keys())
     new_disease = st.selectbox(
-        "Switch Disease",
+        "🔀 Switch",
         options=disease_options,
         index=disease_options.index(selected),
         key="disease_switcher",
-        label_visibility="collapsed",
     )
     if new_disease != selected:
         init_state(new_disease)
