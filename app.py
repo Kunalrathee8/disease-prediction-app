@@ -10,6 +10,10 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Keep sidebar open by default; allow user to reopen it via button
+if "sidebar_open" not in st.session_state:
+    st.session_state.sidebar_open = True
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -221,6 +225,23 @@ div[data-testid="stButton"] > button:hover {
 
 .nav-link { border-radius: 10px !important; }
 .nav-link.active { background: linear-gradient(135deg,#0e4f6b,#0c3d54) !important; }
+
+/* Switch disease button in header */
+.switch-btn-wrap {
+    margin-left: auto;
+}
+.switch-btn-wrap button {
+    background: rgba(6,182,212,0.12) !important;
+    border: 1px solid rgba(6,182,212,0.3) !important;
+    border-radius: 99px !important;
+    padding: 4px 14px !important;
+    font-size: 0.72rem !important;
+    color: #06b6d4 !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    box-shadow: none !important;
+    white-space: nowrap;
+}
 
 @keyframes fadeIn {
     from { opacity:0; transform:translateY(6px); }
@@ -461,6 +482,18 @@ st.markdown(f"""
     <div>
         <div class="hname">MediBot — {selected} Screening</div>
         <div class="hstatus">Online &nbsp;·&nbsp; {total} questions</div>
+    </div>
+    <div style="margin-left:auto">
+        <button onclick="
+            var btn = window.parent.document.querySelector('[data-testid=stSidebarCollapsedControl]') ||
+                      window.parent.document.querySelector('[data-testid=stSidebarNavCollapseButton]') ||
+                      window.parent.document.querySelector('section[data-testid=stSidebar] ~ div button');
+            if(btn){{ btn.click(); }}
+        " style="background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.35);
+                  border-radius:99px;padding:5px 14px;font-size:0.73rem;color:#06b6d4;
+                  font-weight:600;cursor:pointer;font-family:Sora,sans-serif;letter-spacing:0.3px;">
+            ☰ Switch Disease
+        </button>
     </div>
 </div>""", unsafe_allow_html=True)
 
